@@ -429,12 +429,27 @@ class Repository(Framework.TestCase):
         self.assertListKeyEqual(repo.get_teams(), lambda t: t.name, ["Members"])
 
     def testTransfer(self):
-        org = self.g.get_user().get_orgs()[0] if self.g.get_user().get_orgs() else self.g.get_organization("BeaverSoftware")
+        org = self.g.get_user().get_orgs()[1] if self.g.get_user().get_orgs() else self.g.get_organization("BeaverSoftware")
         if org:
-            self.repo.transfer(org.login())
-            self.assertEqual(self.repo.owner, org.login())
-            self.repo.transfer(self.user.login())
-            self.assertEqual(self.repo.owner, self.user.login())
+            repo_name = self.repo.name
+            # first check that repo is not already in org
+            self.assertEqual(org.get_repo(repo_name).name, None)
+
+            # transfer from user to org
+            self.repo.transfer(org.login)
+
+            # now check that repo is in org
+            self.assertEqual(org.get_repo(repo_name).name, repo_name)
+            # and that repo has been removed from user
+            self.assertEqual(self.g.get_user().get_repo(repo_name).name, None)
+
+            # now transfer repo back again
+            org.get_repo(repo_name).transfer(self.user.login)
+
+            # check that repo is back with user
+            self.assertEqual(self.g.get_user().get_repo(repo_name).name, repo_name)
+            # check the repo has been removed from org
+            self.assertEqual(org.get_repo(repo_name).name, None)
         else:
             self.fail("No organisation set up")
 
