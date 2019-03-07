@@ -429,7 +429,7 @@ class Repository(Framework.TestCase):
         self.assertListKeyEqual(repo.get_teams(), lambda t: t.name, ["Members"])
 
     def testTransfer(self):
-        org = self.g.get_user().get_orgs()[1] if self.g.get_user().get_orgs() else self.g.get_organization("BeaverSoftware")
+        org = self.g.get_organization("HotelsDotCom") #TODO what org can we use instead?
         if org:
             repo_name = self.repo.name
             # first check that repo is not already in org
