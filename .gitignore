@@ -47,3 +47,5 @@
 .venv
 venv
 /.project
+/.settings/
+/.pydevproject
